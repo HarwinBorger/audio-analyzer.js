@@ -6,6 +6,10 @@ export class AudioVisualizerFrequencyNormalized{
         this.width = this.canvas.width;
         //context
         this.context = this.canvas.getContext('2d');
+        this.context.font = "12px Arial";
+        this.context.textAlign = "center";
+        this.context.fillStyle = "#ffffff";
+
         //audio
         this.sampleRate = props.sampleRate;
         this.frequencyBinCount = props.frequencyBinCount;
@@ -43,14 +47,12 @@ export class AudioVisualizerFrequencyNormalized{
         for (const [key,item] of audioData.entries()) {
             if(((key)*this.Hz) > octaveHz){
 //                console.log(`${key}, ${octaveHz}, ${key*this.Hz}`);
-                this.context.font = "16px Arial";
-                this.context.fillStyle = "#ffffff";  //<======= here
-                this.context.fillText(`${octaveHz}Hz`, x, 50);
+                this.drawOctaveLine(x);
+                this.context.fillText(`${octaveHz}Hz`, x, 20);
 
                 octaveHz = octaveHz * 2;
                 currentWidth = this.calculateSliceWidth(octaveHz);
                 correction = currentWidth / 2;
-                this.drawOctaveLine(x);
                 // set new line width
                 this.context.lineWidth = Math.max(1,currentWidth);
 
@@ -75,7 +77,7 @@ export class AudioVisualizerFrequencyNormalized{
         this.context.strokeStyle = `hsl(100,0%,50%)`;
         this.context.beginPath();
         this.context.moveTo(x , this.height );
-        this.context.lineTo(x, 0);
+        this.context.lineTo(x, 50);
         this.context.stroke();
     }
 
