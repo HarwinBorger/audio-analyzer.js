@@ -21,7 +21,7 @@ export class AudioAnalyzer {
             window.AudioContext || window.webkitAudioContext
         )();
         this.analyser = this.audioContext.createAnalyser();
-        this.analyser.fftSize = Math.pow(8, 5);
+        this.analyser.fftSize = Math.pow(8, 4);
         this.analyser.smoothingTimeConstant = 0.2;
         var bufferLength = this.analyser.frequencyBinCount;
 //        var bufferLength = 4096;
@@ -63,7 +63,7 @@ export class AudioAnalyzer {
     }
 
     tick() {
-        let fpsInterval = 60;
+        let fpsInterval = 30;
         let now = Date.now();
         let elapsed = now - this.then;
         // if enough time has elapsed, draw the next frame
