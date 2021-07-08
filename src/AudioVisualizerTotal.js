@@ -13,19 +13,20 @@ export class AudioVisualizerTotal{
         let x = 0;
         const sliceWidth = (width) / audioData.length;
 
-        context.lineWidth = 2;
+        context.lineWidth = 1;
          context.strokeStyle = '#098cf0';
 //        context.strokeStyle = this.colors[Math.round(Math.random() * 6)];
         context.clearRect(0, 0, width, height);
 
+        context.beginPath();
+        context.moveTo(0, height / 2);
+
         for (const item of audioData) {
-            context.beginPath();
-            const y = height - (item / 255.0) * height;
-            context.strokeStyle = `hsl(260,80%,${65-40/height*y}%)`;
-            context.moveTo(x, height /2);
+            const y = (item / 255.0) * height;
             context.lineTo(x, y);
-            context.stroke();
             x += sliceWidth;
         }
+        context.lineTo(x, height / 2);
+        context.stroke();
     }
 }

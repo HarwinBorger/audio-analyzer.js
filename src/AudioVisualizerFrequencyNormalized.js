@@ -12,6 +12,12 @@ export class AudioVisualizerFrequencyNormalized{
         this.maxHz = this.sampleRate/2;
         this.Hz = (this.maxHz) / this.frequencyBinCount;
         this.octaveHz = 17.75; // 31.5 first octave  https://www.cirrusresearch.co.uk/blog/wp-content/uploads/2011/11/Octave-Band.jpg
+
+        // when fftsize is to low start from higher octave
+        while(this.Hz > this.octaveHz){
+            this.octaveHz = this.octaveHz*2;
+        }
+
         console.log(31.5 * Math.pow(2,10));
         console.log(`Normalizer at Hz: ${this.Hz} on a samplerate of ${this.sampleRate}`);
 
@@ -37,11 +43,17 @@ export class AudioVisualizerFrequencyNormalized{
         for (const [key,item] of audioData.entries()) {
             if(((key)*this.Hz) > octaveHz){
 //                console.log(`${key}, ${octaveHz}, ${key*this.Hz}`);
+                this.context.font = "16px Arial";
+                this.context.fillStyle = "#ffffff";  //<======= here
+                this.context.fillText(`${octaveHz}Hz`, x, 50);
+
                 octaveHz = octaveHz * 2;
                 currentWidth = this.calculateSliceWidth(octaveHz);
                 correction = currentWidth / 2;
                 this.drawOctaveLine(x);
+                // set new line width
                 this.context.lineWidth = Math.max(1,currentWidth);
+
             }
 
             const y = this.height - (item / 255.0) * this.height;
@@ -73,6 +85,6 @@ export class AudioVisualizerFrequencyNormalized{
      * @returns {number}
      */
     calculateSliceWidth(octaveHz){
-        return (this.width / 10) / (octaveHz / this.Hz);
+        return (this.width / 7) / (octaveHz / this.Hz);
     }
 }

@@ -20,19 +20,29 @@ export class AudioAnalyzer {
         this.audioContext = new (
             window.AudioContext || window.webkitAudioContext
         )();
+        // main analyser
         this.analyser = this.audioContext.createAnalyser();
-        this.analyser.fftSize = Math.pow(8, 4);
+        this.analyser.fftSize = this.getFftSize(8);
         this.analyser.smoothingTimeConstant = 0.2;
+        // optimized analyser
+        this.analyserOptimized = this.audioContext.createAnalyser();
+        this.analyserOptimized.fftSize = this.getFftSize(4);
+        //
         var bufferLength = this.analyser.frequencyBinCount;
-//        var bufferLength = 4096;
+        var bufferLength2 = this.analyserOptimized.frequencyBinCount;
         this.dataArray = new Uint8Array(bufferLength);
+        this.dataArrayOptimized = new Uint8Array(bufferLength2);
         this.dataFrequencyArray = new Uint8Array(bufferLength);
-//        this.dataFrequencyArray = new Float32Array(bufferLength);
-        this.dataArrayTotalMaxLength = 5000;
-        this.dataArrayTotal = new Array(this.dataArrayTotalMaxLength);
+        // set first analyser data
         this.analyser.getByteTimeDomainData(this.dataArray);
         this.analyser.getByteFrequencyData(this.dataFrequencyArray);
-//        this.analyser.getFloatFrequencyData(this.dataFrequencyArray);
+        this.analyserOptimized.connect(this.analyser);
+        this.analyserOptimized.getByteTimeDomainData(this.dataArray);
+
+        // long wave capture
+        this.dataArrayTotalMaxLength = 5000;
+        this.dataArrayTotal = new Array(this.dataArrayTotalMaxLength);
+
 
         // Visualizers
         this.visual = new AudioVisualizer({canvas: canvas1});
@@ -49,6 +59,14 @@ export class AudioAnalyzer {
         });
     }
 
+    /**
+     *
+     * @param number
+     * @returns {number} 1-8
+     */
+    getFftSize(number){
+        return 32 * Math.pow(2, number);
+    }
 
     loadSource(URL) {
         window.fetch(URL)
@@ -63,18 +81,19 @@ export class AudioAnalyzer {
     }
 
     tick() {
-        let fpsInterval = 30;
+        let fpsInterval = 60;
         let now = Date.now();
         let elapsed = now - this.then;
         // if enough time has elapsed, draw the next frame
         if (elapsed > fpsInterval) {
 //            this.analyser.getByteTimeDomainData(this.dataArray);
+            this.analyserOptimized.getByteTimeDomainData(this.dataArrayOptimized);
             this.analyser.getByteTimeDomainData(this.dataArray);
             this.analyser.getByteFrequencyData(this.dataFrequencyArray);
 //            this.analyser.getFloatFrequencyData(this.dataFrequencyArray);
 
-            for (var i = 0; i < this.dataArray.length; i = i + 48) {
-                this.dataArrayTotal.push(this.dataArray[i]);
+            for (var i = 0; i < this.dataArrayOptimized.length; i = i + 48) {
+                this.dataArrayTotal.push(this.dataArrayOptimized[i]);
             }
             if (this.dataArrayTotal.length > this.dataArrayTotalMaxLength) {
                 this.dataArrayTotal.splice(0, this.dataArrayTotal.length - this.dataArrayTotalMaxLength);
@@ -103,7 +122,7 @@ export class AudioAnalyzer {
         console.log(this.audioContext);
         this.audioSource = this.audioContext.createBufferSource();
         this.audioSource.buffer = this.audioBuffer;
-        this.audioSource.connect(this.analyser);
+        this.audioSource.connect(this.analyserOptimized);
         this.analyser.connect(this.audioContext.destination);
         this.audioSource.start(0, offset);
         this.pausedAt = 0;
