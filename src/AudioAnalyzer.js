@@ -35,10 +35,14 @@ export class AudioAnalyzer {
 //        this.analyser.getFloatFrequencyData(this.dataFrequencyArray);
 
         // Visualizers
-        this.visual = new AudioVisualizer({canvas: canvas1, detail: 1});
-        this.visualFrequency = new AudioVisualizerFrequency({canvas: canvas2, detail: 1});
-        this.visualFrequencyNormalized = new AudioVisualizerFrequencyNormalized({canvas: canvas3, detail: 1});
-        this.visualTotal = new AudioVisualizerTotal({canvas: canvas4, detail: 1});
+        this.visual = new AudioVisualizer({canvas: canvas1});
+        this.visualFrequency = new AudioVisualizerFrequency({canvas: canvas2});
+        this.visualFrequencyNormalized = new AudioVisualizerFrequencyNormalized({
+            canvas: canvas3,
+            sampleRate: this.audioContext.sampleRate,
+            frequencyBinCount: this.analyser.frequencyBinCount
+        });
+        this.visualTotal = new AudioVisualizerTotal({canvas: canvas4});
 
         requestAnimationFrame(() => {
             this.tick()
@@ -110,8 +114,8 @@ export class AudioAnalyzer {
     pause() {
         console.log(this.audioContext);
         this.analyser.getByteTimeDomainData(this.dataArray);
-//        this.analyser.getByteFrequencyData(this.dataFrequencyArray);
-        this.analyser.getFloatFrequencyData(this.dataFrequencyArray);
+        this.analyser.getByteFrequencyData(this.dataFrequencyArray);
+//        this.analyser.getFloatFrequencyData(this.dataFrequencyArray);
         console.log(this.dataArray);
         console.log(this.dataFrequencyArray);
 

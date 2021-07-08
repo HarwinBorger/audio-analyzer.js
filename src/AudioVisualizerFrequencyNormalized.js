@@ -1,7 +1,11 @@
 export class AudioVisualizerFrequencyNormalized{
     constructor(props) {
         this.canvas = props.canvas;
-        this.detail = props.detail;
+        this.sampleRate = props.sampleRate;
+        this.frequencyBinCount = props.frequencyBinCount;
+        this.Hz = this.sampleRate / this.frequencyBinCount;
+
+        console.log(`Normalizer at Hz: ${this.Hz} on a samplerate of ${this.sampleRate}`);
     }
 
 
@@ -11,21 +15,20 @@ export class AudioVisualizerFrequencyNormalized{
         const height = canvas.height;
         const width = canvas.width;
         const context = canvas.getContext('2d');
-        const sliceWidth = width / 12;
+        const sliceWidth = width / 6;
 
         context.lineWidth = 1;
         context.strokeStyle = '#098cf0';
         context.clearRect(0, 0, width, height);
 
-        let double = 1;
+        let double = 31.5;
         let currentWidth = sliceWidth / double;
         context.lineWidth = currentWidth;
         let x = context.lineWidth;
         let correction = currentWidth / 2;
 
         for (const [key,item] of audioData.entries()) {
-
-            if(key === double){
+            if((key+1*this.Hz) > double){
                 double = double *2;
                 currentWidth = sliceWidth / double;
                 correction = currentWidth / 2;
@@ -36,11 +39,11 @@ export class AudioVisualizerFrequencyNormalized{
                 context.moveTo(x , height );
                 context.lineTo(x, 0);
                 context.stroke();
-                context.lineWidth = currentWidth;
+                context.lineWidth = Math.max(1,currentWidth);
             }
 
             const y = height - (item / 255.0) * height;
-            context.strokeStyle = `hsl(${300-75/height*y},80%,${100-85/height*y}%)`;
+            context.strokeStyle = `hsl(${300-75/height*y},100%,${95-(80/height)*y}%)`;
             context.beginPath();
             context.moveTo(x+correction, height );
             context.lineTo(x+correction, y);

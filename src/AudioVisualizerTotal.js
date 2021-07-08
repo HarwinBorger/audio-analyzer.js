@@ -1,7 +1,6 @@
 export class AudioVisualizerTotal{
     constructor(props) {
         this.canvas = props.canvas;
-        this.detail = props.detail;
     }
 
 

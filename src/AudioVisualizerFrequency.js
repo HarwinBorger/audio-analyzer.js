@@ -9,7 +9,6 @@ export class AudioVisualizerFrequency{
             '#0F90F9',
             '#9F09F0',
         ];
-        this.detail = props.detail;
     }
 
 
@@ -20,7 +19,7 @@ export class AudioVisualizerFrequency{
         const width = canvas.width;
         const context = canvas.getContext('2d');
         let x = 0;
-        const sliceWidth = (width * this.detail) / audioData.length;
+        const sliceWidth = (width ) / audioData.length;
 
         context.lineWidth = 1;
          context.strokeStyle = '#098cf0';
