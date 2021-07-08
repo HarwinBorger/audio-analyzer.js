@@ -31,7 +31,7 @@ export class AudioVisualizerFrequency{
             const y = height - (item / 255.0) * height;
             context.strokeStyle = `hsl(${300-75/height*y},80%,${90-85/height*y}%)`;
             context.beginPath();
-            context.moveTo(x, height );
+            context.moveTo(x , height);
             context.lineTo(x, y);
             context.stroke();
             x += sliceWidth;
